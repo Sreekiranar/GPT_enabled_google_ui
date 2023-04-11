@@ -9,6 +9,12 @@ This project demonstrates the power of combining Google Search and OpenAI's GPT 
 - Prompt engineering techniques
 - Flask-based REST API for seamless frontend-backend communication
 
+One of the main limitations of the OpenAI GPT is that it is only trained on data till Sept 2021 and so it cannot answer the questions happened after that. Here, we utilise google search API to get updated results and then use openai to generate prompts resulting in updated and concise information with source.
+
+![GPT-4 Sample output](gpt4_output.jpg)
+
+![GPT3.5 integrated with Google Sample ouput](new_ui_out.jpg)
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)

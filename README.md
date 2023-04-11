@@ -11,7 +11,11 @@ This project demonstrates the power of combining Google Search and OpenAI's GPT 
 
 One of the main limitations of the OpenAI GPT is that it is only trained on data till Sept 2021 and so it cannot answer the questions happened after that. Here, we utilise google search API to get updated results and then use openai to generate prompts resulting in updated and concise information with source.
 
+GPT-4 Sample output
+
 ![GPT-4 Sample output](gpt4_output.jpg)
+
+Google Integrated Sample Output
 
 ![GPT3.5 integrated with Google Sample ouput](new_ui_out.jpg)
 

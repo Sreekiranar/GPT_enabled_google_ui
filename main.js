@@ -1,6 +1,6 @@
 document.getElementById("submitButton").addEventListener("click", async () => {
   const textInput = document.getElementById("textInput").value;
-  displayContent("textPrompt\n", textInput);
+  displayContent("textPrompt", textInput);
 
   setLoadingStatus("Loading...");
   const response = await sendPromptToServer(textInput);

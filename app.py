@@ -7,23 +7,32 @@ from googlesearch import search
 app = Flask(__name__)
 
 # Configure the OpenAI API
-openai.api_key = "enter-your-api-key"
-
+openai.api_key = "enter_your_api_key"
 
 def scrape(url):
     """
-    Scrape the content of the given URL and return the text from all paragraphs.
+    Scrape the content of the given URL and return all the text.
 
     Args:
         url (str): URL to scrape.
 
     Returns:
-        str: The concatenated text from all paragraphs in the scraped webpage.
+        str: The concatenated text from the scraped webpage.
     """
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    paragraphs = soup.find_all('p')
-    text = ' '.join([p.get_text() for p in paragraphs])
+
+    # Remove script and style elements
+    for script in soup(['script', 'style']):
+        script.decompose()
+
+    # Get the text from the entire webpage
+    text = soup.get_text()
+
+    # Remove leading and trailing spaces and join the lines
+    lines = (line.strip() for line in text.splitlines())
+    text = ' '.join(line for line in lines if line)
+
     return text
 
 def get_mock_response(prompt):
@@ -63,9 +72,11 @@ def send_prompt():
     else:
         results = []
         # Perform a Google search using the open-source library
-        for url in search(prompt, num_results=3):
+        for i, url in enumerate(search(prompt, num_results=3)):
             try:
                 scraped_text = scrape(url)
+                with open(f"scraped_text_{i+1}.txt", 'w') as f:
+                    f.write(scraped_text)
                 generated_prompt = f'Please provide an accurate and concise reponse for the following prompt:{prompt}, use only the information provided in the {scraped_text}. provide any necessary links that might have relevant information if needed'
                 print(f"{url=}")
                 # Send the new prompt to the OpenAI API

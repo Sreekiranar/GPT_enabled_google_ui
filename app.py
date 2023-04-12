@@ -75,8 +75,6 @@ def send_prompt():
         for i, url in enumerate(search(prompt, num_results=3)):
             try:
                 scraped_text = scrape(url)
-                with open(f"scraped_text_{i+1}.txt", 'w') as f:
-                    f.write(scraped_text)
                 generated_prompt = f'Please provide an accurate and concise reponse for the following prompt:{prompt}, use only the information provided in the {scraped_text}. provide any necessary links that might have relevant information if needed'
                 print(f"{url=}")
                 # Send the new prompt to the OpenAI API

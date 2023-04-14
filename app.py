@@ -1,5 +1,6 @@
 import openai
 import requests
+import json
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify, request
 from googlesearch import search
@@ -8,6 +9,42 @@ app = Flask(__name__)
 
 # Configure the OpenAI API
 openai.api_key = "enter_your_api_key"
+
+USE_GOOGLE_API = True  # Set this flag to True to use the official Google API, and False to use the googlesearch library
+
+def google_search_api(query, api_key, cx):
+    """
+    Perform a Google search using the official Google Custom Search JSON API.
+
+    Args:
+        query (str): The search query.
+        api_key (str): Your Google API key.
+        cx (str): Your custom search engine ID.
+
+    Returns:
+        dict: A dictionary containing the search results.
+    """
+    url = 'https://www.googleapis.com/customsearch/v1'
+    params = {
+        'key': api_key,
+        'cx': cx,
+        'q': query,
+    }
+    response = requests.get(url, params=params)
+    return response.json()
+
+def google_search_unofficial(query, num_results):
+    """
+    Perform a Google search using the unofficial googlesearch library.
+
+    Args:
+        query (str): The search query.
+        num_results (int): The number of search results to retrieve.
+
+    Returns:
+        list: A list of search result URLs.
+    """
+    return list(search(query, num_results=num_results))
 
 def scrape(url):
     """
@@ -71,11 +108,24 @@ def send_prompt():
         results = get_mock_response(prompt)
     else:
         results = []
-        # Perform a Google search using the open-source library
-        for i, url in enumerate(search(prompt, num_results=3)):
+
+        if USE_GOOGLE_API:
+            # Add your Google Custom Search API key and Search Engine ID here
+            api_key = "your_google_custom_search_api_key"
+            cx = "your_search_engine_id"
+
+            # Get search results using the Google Custom Search JSON API
+            search_results = google_search_api(prompt, api_key, cx)
+            search_urls = [item['link'] for item in search_results.get('items', [])][:3]
+        else:
+            # Get search results using the unofficial googlesearch library
+            search_urls = google_search_unofficial(prompt, num_results=3)
+
+        # Iterate through the search URLs and process them
+        for i, url in enumerate(search_urls):
             try:
                 scraped_text = scrape(url)
-                generated_prompt = f'Please provide an accurate and concise reponse for the following prompt:{prompt}, use only the information provided in the {scraped_text}. provide any necessary links that might have relevant information if needed'
+                generated_prompt = f'Please provide an accurate and concise response for the following prompt:{prompt}, use only the information provided in the {scraped_text}. provide any necessary links that might have relevant information if needed'
                 print(f"{url=}")
                 # Send the new prompt to the OpenAI API
                 response = openai.Completion.create(

@@ -71,8 +71,6 @@ These instructions will help you set up and run the project on your local machin
 Update the `app.py` file with your OpenAI API key:
 
 ```python
-import os
-import openai
 
 # Configure the OpenAI API
 openai.api_key = "enter-your-api-key"
